@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = "jitendramauryadev/my-first-image"
+        DOCKER_IMAGE = "jitendramauryadev/myfirstprojectongithub"
         DOCKER_TAG = "latest"
     }
 
@@ -16,9 +16,7 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh """
-                docker build -t $DOCKER_IMAGE:$DOCKER_TAG .
-                """
+                bat 'docker build -t %DOCKER_IMAGE%:%DOCKER_TAG% .'
             }
         }
 
@@ -29,35 +27,33 @@ pipeline {
                     usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_PASS'
                 )]) {
-                    sh """
-                    echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-                    """
+                    bat '''
+                    echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
+                    '''
                 }
             }
         }
 
         stage('Push Image to Docker Hub') {
             steps {
-                sh """
-                docker push $DOCKER_IMAGE:$DOCKER_TAG
-                """
+                bat 'docker push %DOCKER_IMAGE%:%DOCKER_TAG%'
             }
         }
 
         stage('Pull & Run Container') {
             steps {
-                sh """
-                docker rm -f html-app || true
-                docker pull $DOCKER_IMAGE:$DOCKER_TAG
-                docker run -d -p 8081:80 --name html-app $DOCKER_IMAGE:$DOCKER_TAG
-                """
+                bat '''
+                docker rm -f html-app || exit 0
+                docker pull %DOCKER_IMAGE%:%DOCKER_TAG%
+                docker run -d -p 8081:80 --name html-app %DOCKER_IMAGE%:%DOCKER_TAG%
+                '''
             }
         }
     }
 
     post {
         always {
-            sh 'docker logout'
+            bat 'docker logout'
         }
     }
 }
