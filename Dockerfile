@@ -1,3 +1,3 @@
 FROM nginx:alpine
 COPY firstproject.html /usr/share/nginx/html/index.html
-Expose 80
+EXPOSE 80
