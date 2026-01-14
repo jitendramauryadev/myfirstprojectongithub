@@ -43,9 +43,9 @@ pipeline {
         stage('Pull & Run Container') {
             steps {
                 bat '''
-                docker rm -f html-app || exit 0
+                docker rm -f firstapp || exit 0
                 docker pull %DOCKER_IMAGE%:%DOCKER_TAG%
-                docker run -d -p 8081:80 --name html-app %DOCKER_IMAGE%:%DOCKER_TAG%
+                docker run -d -p 8081:80 --name firstapp %DOCKER_IMAGE%:%DOCKER_TAG%
                 '''
             }
         }
